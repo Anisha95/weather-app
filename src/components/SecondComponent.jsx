@@ -8,15 +8,17 @@ export default class SecondComponent extends Component {
      }
 
     render() {
-        const {data, keyVal, activeIndex} = this.props;
+        const {data, keyVal, activeIndex, onClick, activeDay} = this.props;
         return ( 
             <div
+            class="evm"
+            onClick={() => onClick(activeIndex, keyVal)}
             key={keyVal} 
             style={{
                 display: 'flex',
                 flexDirection: 'column',
                 flex: 1,
-                border: activeIndex === keyVal ? "2px solid black" : "none",
+                border: activeDay === keyVal ? "2px solid #00bfff" : "none",
                 borderColor: '#00bfff'
             }
         }

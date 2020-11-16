@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {imageArr, kelvinToCelcius} from '../constants'
 import moment from 'moment'
+import sunStatus from '../images/sunStatus.png';
 
 export default class WeatherReport extends Component {
     state = {
@@ -8,12 +9,28 @@ export default class WeatherReport extends Component {
         averagePressure:null,
         averageHumidity:null
     };
+
+
+    componentDidMount = () => {
+        
+    }
+
     componentDidUpdate (prevProps, prevState) {
         let {weatherUpdate, getWeatherUpdate} = this.props
         let {averagePressure, averageHumidity, averageTemp} = this.state;
         let pressureCount = 0; let humidityCount = 0;
         let degreeCount = 0;
+
+      
+
         if (averagePressure == null && averageHumidity == null || weatherUpdate !== prevProps.weatherUpdate) {
+          
+            let half_length = weatherUpdate && weatherUpdate.list && Math.ceil(weatherUpdate.list.length / 2);    
+
+            if (weatherUpdate && weatherUpdate.cnt > 24) {
+                weatherUpdate && weatherUpdate.list && weatherUpdate.list.splice(1,half_length);
+            }
+
             weatherUpdate && weatherUpdate.list && weatherUpdate.list.map((weather) => {
                 humidityCount += weather.main.humidity
                 pressureCount += weather.main.pressure
@@ -38,8 +55,33 @@ export default class WeatherReport extends Component {
         let meridian = time >= 12 ? 'pm' : 'am';
         time  = time > 12 ? time - 12 : time;
         let celcius = kelvinToCelcius(item.main.temp);
+        let bottomVal = parseInt(120 + celcius* 1.5);
+
         return(
-            <div key={index} style={{display: 'flex', flexDirection: 'column', paddingRight: '5%', }}>
+            <div key={index} style={{display: 'flex',
+            flexDirection: 'column', paddingRight: '5%', }}>
+            <div 
+            style={{
+                borderLeft: '1px solid black',
+                height: '160px',
+                borderColor: '#DCDCDC',
+                paddingRight: 23,
+            }}
+            
+            />
+            <div
+            style={{
+                border: '2px solid blue',
+                borderRadius: '50%',
+                width: '8px',
+                height: '8px',
+                marginRight: 40,
+                position: 'sticky',
+                bottom: bottomVal,
+                zIndex: 9,
+                display: 'inline-block'
+            }}
+            />
             <p style={{fontSize: 30}}>{parseInt(celcius)}&deg;</p>
             <p>{time} {meridian}</p>
         </div>
@@ -57,6 +99,9 @@ export default class WeatherReport extends Component {
 
         sunrise = moment.unix(sunrise).format('h:mm:ss a');
         sunset = moment.unix(sunset).format('h:mm:ss a');
+        let nowTime = moment(new Date()).format('H:mm:ss');
+        nowTime = parseInt(nowTime.split(':')[0]);
+        //let nowTime = moment.utc(new Date()).format('h:mm:ss a');
         let celcius = weatherUpdate  && averageTemp ? averageTemp : '23';
         
         if (weatherUpdate && weatherUpdate.cod === '200') {
@@ -105,8 +150,26 @@ export default class WeatherReport extends Component {
               <p style={{fontWeight: 'bold', fontSize: 24}}>Sunset</p>
             <p style={{fontSize: 24}}>{sunset}</p>
             </div>
+
+          
            
             </div>
+
+            <img src={sunStatus} 
+        style={{
+            height: 145, 
+            width: 705,
+            alignSelf: 'center',
+        }}/>
+
+        <img src={'https://cdn4.iconfinder.com/data/icons/the-weather-is-nice-today/64/weather_3-512.png'} 
+                style={{
+                    height: 65, 
+                    width: 65,
+                    position: 'absolute',
+                    top: '103%',
+                    left: 550 + (nowTime * 40)
+                }}/>
 
     </div>
         );
@@ -135,7 +198,8 @@ const styles = {
         display: 'flex', 
         flexDirection: 'row', 
         justifyContent: 'space-between',
-        overflowX : 'scroll', 
+        overflowX : 'auto', 
+        marginTop: '5%',
     },
     thirdSubview: {
         display: 'flex', 
