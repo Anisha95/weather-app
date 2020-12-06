@@ -5,4 +5,6 @@ live on : http://elated-pet.surge.sh/
 
 To run the app locally: (unix based OS)
 
+* **Step 1**: run npm i
 * **Step 1**: run npm start
+
